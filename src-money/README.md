@@ -1,6 +1,6 @@
-# ASP.NET Core Controller Sample
+# Dapr Money Sample
 
-This sample shows using Dapr with ASP.NET Core routing. This application is a simple and not-so-secure banking application. The application uses the Dapr state-store for its data storage.
+Sample taken from https://github.com/dapr/dotnet-sdk/tree/master/samples/AspNetCore/ControllerSample
 
 It exposes the following endpoints over HTTP:
  - GET `/{account}`: Get the balance for the account specified by `id`
@@ -19,7 +19,7 @@ The application also registers for pub-sub with the `deposit` and `withdraw` top
 
  The application will listen on port 5000 for HTTP (not Dapr endpoint).
 
-### Test
+### Test calling HTTP endpoint
 
 **Deposit Money**
 
