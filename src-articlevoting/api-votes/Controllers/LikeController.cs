@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace api_like.Controllers
+namespace api_votes.Controllers
 {
     [ApiController]
     public class LikeController : ControllerBase
@@ -16,7 +16,7 @@ namespace api_like.Controllers
         public ActionResult<string> Get()
         {
             Console.WriteLine("Hello, World.");
-            return "World";
+            return "Hello from API Votes";
         }
 
         // save vote in store

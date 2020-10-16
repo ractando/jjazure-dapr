@@ -1,4 +1,4 @@
-namespace api_like
+namespace api_votes
 {
     public class ArticleItem
     {

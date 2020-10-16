@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>api_like</RootNamespace>
+    <RootNamespace>api_votes</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-namespace api_like
+namespace api_articles
 {
     using System.ComponentModel.DataAnnotations;
     public class VoteItem
