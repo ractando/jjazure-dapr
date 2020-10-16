@@ -8,7 +8,7 @@ spec:
   - name: url
     value: https://jjcosmos.documents.azure.com:443/
   - name: masterKey
-    value: pQQyh6lFWzJ2j7Wt2QtxLP8SB5BWpPhWg0tkU25Oq08h5rPm33ifDS0cjv8f5MHqp5SVOeBUmMK2QU3tW9CABA==
+    value: !!!YOUR_KEY
   - name: database
     value: jjdb
   - name: collection
