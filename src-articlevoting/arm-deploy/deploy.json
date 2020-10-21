@@ -1,0 +1,244 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "databaseAccounts_jjcosmos_name": {
+            "defaultValue": "jjcosmos",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2020-06-01-preview",
+            "name": "[parameters('databaseAccounts_jjcosmos_name')]",
+            "location": "West Europe",
+            "tags": {
+                "defaultExperience": "Core (SQL)",
+                "hidden-cosmos-mmspecial": "",
+                "CosmosAccountType": "Non-Production"
+            },
+            "kind": "GlobalDocumentDB",
+            "identity": {
+                "type": "None"
+            },
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "enableAutomaticFailover": false,
+                "enableMultipleWriteLocations": false,
+                "isVirtualNetworkFilterEnabled": false,
+                "virtualNetworkRules": [],
+                "disableKeyBasedMetadataWriteAccess": false,
+                "enableFreeTier": false,
+                "enableAnalyticalStorage": false,
+                "createMode": "Default",
+                "databaseAccountOfferType": "Standard",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "West Europe",
+                        "provisioningState": "Succeeded",
+                        "failoverPriority": 0,
+                        "isZoneRedundant": false
+                    }
+                ],
+                "cors": [],
+                "capabilities": [
+                    {
+                        "name": "EnableServerless"
+                    }
+                ],
+                "ipRules": [],
+                "backupPolicy": {
+                    "type": "Periodic",
+                    "periodicModeProperties": {
+                        "backupIntervalInMinutes": 240,
+                        "backupRetentionIntervalInHours": 8
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+            "apiVersion": "2020-06-01-preview",
+            "name": "[concat(parameters('databaseAccounts_jjcosmos_name'), '/jjdb')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_jjcosmos_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "jjdb"
+                },
+                "options": {}
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "apiVersion": "2020-06-01-preview",
+            "name": "[concat(parameters('databaseAccounts_jjcosmos_name'), '/jjdb/articles')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_jjcosmos_name'), 'jjdb')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_jjcosmos_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "articles",
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "automatic": true,
+                        "includedPaths": [
+                            {
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [
+                            {
+                                "path": "/\"_etag\"/?"
+                            }
+                        ]
+                    },
+                    "partitionKey": {
+                        "paths": [
+                            "/id"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "uniqueKeyPolicy": {
+                        "uniqueKeys": []
+                    },
+                    "conflictResolutionPolicy": {
+                        "mode": "LastWriterWins",
+                        "conflictResolutionPath": "/_ts"
+                    }
+                },
+                "options": {}
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "apiVersion": "2020-06-01-preview",
+            "name": "[concat(parameters('databaseAccounts_jjcosmos_name'), '/jjdb/leases')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_jjcosmos_name'), 'jjdb')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_jjcosmos_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "leases",
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "automatic": true,
+                        "includedPaths": [
+                            {
+                                "path": "/*",
+                                "indexes": [
+                                    {
+                                        "kind": "Range",
+                                        "dataType": "Number",
+                                        "precision": -1
+                                    },
+                                    {
+                                        "kind": "Range",
+                                        "dataType": "String",
+                                        "precision": -1
+                                    }
+                                ]
+                            }
+                        ],
+                        "excludedPaths": [
+                            {
+                                "path": "/\"_etag\"/?"
+                            }
+                        ]
+                    },
+                    "conflictResolutionPolicy": {
+                        "mode": "LastWriterWins",
+                        "conflictResolutionPath": "/_ts"
+                    }
+                },
+                "options": {}
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+            "apiVersion": "2020-06-01-preview",
+            "name": "[concat(parameters('databaseAccounts_jjcosmos_name'), '/jjdb/votes')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_jjcosmos_name'), 'jjdb')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_jjcosmos_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "votes",
+                    "indexingPolicy": {
+                        "indexingMode": "consistent",
+                        "automatic": true,
+                        "includedPaths": [
+                            {
+                                "path": "/*"
+                            }
+                        ],
+                        "excludedPaths": [
+                            {
+                                "path": "/\"_etag\"/?"
+                            }
+                        ]
+                    },
+                    "partitionKey": {
+                        "paths": [
+                            "/id"
+                        ],
+                        "kind": "Hash"
+                    },
+                    "uniqueKeyPolicy": {
+                        "uniqueKeys": []
+                    },
+                    "conflictResolutionPolicy": {
+                        "mode": "LastWriterWins",
+                        "conflictResolutionPath": "/_ts"
+                    }
+                },
+                "options": {}
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/storedProcedures",
+            "apiVersion": "2020-06-01-preview",
+            "name": "[concat(parameters('databaseAccounts_jjcosmos_name'), '/jjdb/articles/__dapr__')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers', parameters('databaseAccounts_jjcosmos_name'), 'jjdb', 'articles')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_jjcosmos_name'), 'jjdb')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_jjcosmos_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "__dapr__",
+                    "body": "// upserts - an array of objects to upsert\n// deletes - an array of objects to delete\n\nfunction dapr_multi(upserts, deletes) {\n    var context = getContext();\n    var container = context.getCollection();\n    var response = context.getResponse();\n    \n    if (typeof upserts === \"string\") {\n        throw new Error(\"first arg is a string, expected array of objects\");\n    }\n\n    if (typeof deletes === \"string\") {\n        throw new Error(\"second arg is a string, expected array of objects\");\n    }\n\n    // create the query string used to look up deletes    \n    var query = \"select * from n where n.id in \";\n    if (deletes.length > 0) {        \n        query += (\"('\" + deletes[0].id + \"'\");\n\n        for (let j = 1; j < deletes.length; j++) {            \n            query += \", '\" + deletes[j].id + \"'\" \n        }\n    }\n\n    query += ')'\n    console.log(\"query\" + query)\n    var upsertCount = 0;\n    var deleteCount = 0;\n      \n    var collectionLink = container.getSelfLink();\n\n    // do the upserts first    \n    if (upserts.length != 0) {\n        tryCreate(upserts[upsertCount], callback);\n    } else {\n        tryQueryAndDelete();\n    }\n\n    function tryCreate(doc, callback) {        \n        var isAccepted = container.upsertDocument(collectionLink, doc, callback);\n        \n        // fail if we hit execution bounds\n        if (!isAccepted) {                        \n            throw new Error(\"upsertDocument() not accepted, please retry\");\n        }\n    }\n\n    function callback(err, doc, options) {        \n        if (err) throw err;\n\n        upsertCount++;\n\n        if (upsertCount >= upserts.length) {\n            \n            // upserts are done, start the deletes, if any\n            if (deletes.length > 0) {\n                tryQueryAndDelete()\n            }\n        } else {            \n            tryCreate(upserts[upsertCount], callback);\n        }\n    }\n\n    function tryQueryAndDelete() {    \n\t\tvar requestOptions = {};            \n        var isAccepted = container.queryDocuments(collectionLink, query, requestOptions, function (err, retrievedDocs, responseOptions) {\n            if (err) {\n                throw err;\n            }\n\n            if (retrievedDocs == null) {                \n                response.setBody(JSON.stringify(\"success\"));\n            } else if (retrievedDocs.length > 0) {                \n                tryDelete(retrievedDocs);\t\t\t\n            } else {                \n                // done with all deletes                \n                response.setBody(JSON.stringify(\"success\"));\n            }\n        });\n\n        // fail if we hit execution bounds\n        if (!isAccepted) {\n            throw new Error(\"queryDocuments() not accepted, please retry\");\n        }\n    }\n\n    function tryDelete(documents) {\n        if (documents.length > 0) {\n            // Delete the first document in the array.\n            var isAccepted = container.deleteDocument(documents[0]._self, {}, function (err, responseOptions) {\n                if (err) throw err;\n\n                deleteCount++;\n                documents.shift();\n                // Delete the next document in the array.\n                tryDelete(documents);\n            });\n\n            // fail if we hit execution bounds\n            if (!isAccepted) {\n                throw new Error(\"deleteDocument() not accepted, please retry\");\n            }\n        } else {\n            // If the document array is empty, query for more documents.\n            tryQueryAndDelete();\n        }\n    }\n}"
+                },
+                "options": {}
+            }
+        },
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/storedProcedures",
+            "apiVersion": "2020-06-01-preview",
+            "name": "[concat(parameters('databaseAccounts_jjcosmos_name'), '/jjdb/votes/__dapr__')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers', parameters('databaseAccounts_jjcosmos_name'), 'jjdb', 'votes')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_jjcosmos_name'), 'jjdb')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_jjcosmos_name'))]"
+            ],
+            "properties": {
+                "resource": {
+                    "id": "__dapr__",
+                    "body": "// upserts - an array of objects to upsert\n// deletes - an array of objects to delete\n\nfunction dapr_multi(upserts, deletes) {\n    var context = getContext();\n    var container = context.getCollection();\n    var response = context.getResponse();\n    \n    if (typeof upserts === \"string\") {\n        throw new Error(\"first arg is a string, expected array of objects\");\n    }\n\n    if (typeof deletes === \"string\") {\n        throw new Error(\"second arg is a string, expected array of objects\");\n    }\n\n    // create the query string used to look up deletes    \n    var query = \"select * from n where n.id in \";\n    if (deletes.length > 0) {        \n        query += (\"('\" + deletes[0].id + \"'\");\n\n        for (let j = 1; j < deletes.length; j++) {            \n            query += \", '\" + deletes[j].id + \"'\" \n        }\n    }\n\n    query += ')'\n    console.log(\"query\" + query)\n    var upsertCount = 0;\n    var deleteCount = 0;\n      \n    var collectionLink = container.getSelfLink();\n\n    // do the upserts first    \n    if (upserts.length != 0) {\n        tryCreate(upserts[upsertCount], callback);\n    } else {\n        tryQueryAndDelete();\n    }\n\n    function tryCreate(doc, callback) {        \n        var isAccepted = container.upsertDocument(collectionLink, doc, callback);\n        \n        // fail if we hit execution bounds\n        if (!isAccepted) {                        \n            throw new Error(\"upsertDocument() not accepted, please retry\");\n        }\n    }\n\n    function callback(err, doc, options) {        \n        if (err) throw err;\n\n        upsertCount++;\n\n        if (upsertCount >= upserts.length) {\n            \n            // upserts are done, start the deletes, if any\n            if (deletes.length > 0) {\n                tryQueryAndDelete()\n            }\n        } else {            \n            tryCreate(upserts[upsertCount], callback);\n        }\n    }\n\n    function tryQueryAndDelete() {    \n\t\tvar requestOptions = {};            \n        var isAccepted = container.queryDocuments(collectionLink, query, requestOptions, function (err, retrievedDocs, responseOptions) {\n            if (err) {\n                throw err;\n            }\n\n            if (retrievedDocs == null) {                \n                response.setBody(JSON.stringify(\"success\"));\n            } else if (retrievedDocs.length > 0) {                \n                tryDelete(retrievedDocs);\t\t\t\n            } else {                \n                // done with all deletes                \n                response.setBody(JSON.stringify(\"success\"));\n            }\n        });\n\n        // fail if we hit execution bounds\n        if (!isAccepted) {\n            throw new Error(\"queryDocuments() not accepted, please retry\");\n        }\n    }\n\n    function tryDelete(documents) {\n        if (documents.length > 0) {\n            // Delete the first document in the array.\n            var isAccepted = container.deleteDocument(documents[0]._self, {}, function (err, responseOptions) {\n                if (err) throw err;\n\n                deleteCount++;\n                documents.shift();\n                // Delete the next document in the array.\n                tryDelete(documents);\n            });\n\n            // fail if we hit execution bounds\n            if (!isAccepted) {\n                throw new Error(\"deleteDocument() not accepted, please retry\");\n            }\n        } else {\n            // If the document array is empty, query for more documents.\n            tryQueryAndDelete();\n        }\n    }\n}"
+                },
+                "options": {}
+            }
+        }
+    ]
+}

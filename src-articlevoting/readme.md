@@ -9,6 +9,12 @@ Services
 
 How to use Dapr https://github.com/dapr/docs/tree/master/howto
 
+## Create Azure resources
+
+Create Azure CosmosDB and configure connection string and credentials in dapr components folder.
+
+You can use [arm-deploy](/arm-deploy) scripts.
+
 ## Create project for API Votes
 
 ```dotnetcli
@@ -54,17 +60,31 @@ curl -X POST http://localhost:5020/v1.0/invoke/app-votes/method/like -H "Content
 
 Follow same steps as for API Votes, configure state store for CosmosDB - articles container
 
-Dapr Publish/Subscribe sample - https://github.com/dapr/quickstarts/tree/master/pub-sub/react-form
+Dapr Publish/Subscribe
 
-Run from commandline or from VS Code Launch task Dapr-Debug
+- https://github.com/dapr/docs/tree/master/howto/publish-topic
+- https://github.com/dapr/quickstarts/tree/master/pub-sub/react-form
+
+Run from commandline or from VS Code Launch task Dapr-Debug (changed default dotnet kestrel port to 5005)
 
 ```powershell
 cd api-articles
-dapr run --app-id app-articles --port 5030 --app-port 5000 dotnet run --components-path ./components
+dapr run --app-id app-articles --port 5030 --app-port 5005 dotnet run --components-path ./components
 ```
 
 Test Hello call
 
 ```powershell
 curl http://localhost:5030/v1.0/invoke/app-articles/method/hello
+```
+
+Create article and publish message with new vote
+
+```powershell
+
+curl -X POST http://localhost:5000/create -H "Content-Type: application/json" -d '{ \"articleid\": \"1\" }'
+curl -X POST http://localhost:5030/v1.0/invoke/app-articles/method/create -H "Content-Type: application/json" -d '{ \"articleid\": \"1\" }'
+
+curl -X POST http://localhost:5030/v1.0/publish/pubsub/likeprocess -H "Content-Type: application/json" -d '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
+dapr publish --topic likeprocess --pubsub pubsub --data '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
 ```

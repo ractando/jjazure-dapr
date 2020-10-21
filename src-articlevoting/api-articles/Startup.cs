@@ -40,6 +40,8 @@ namespace api_articles
 
             app.UseRouting();
 
+            app.UseCloudEvents();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -31,6 +31,9 @@ namespace api_votes.Controllers
             VoteItem newItem = item;
             await daprClient.SaveStateAsync(StoreName, key, newItem);
 
+            // publish message in topic
+            await daprClient.PublishEventAsync<VoteItem>("pubsub", "likeprocess", newItem);
+
             return string.Format("Vote liked key: {0}", key);
         }
     }
