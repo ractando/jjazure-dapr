@@ -27,9 +27,11 @@ namespace api_articles.Controllers
         {
             // unique key for vote like (article and liker)
             string key = item.articleid;
+            Console.WriteLine("Enter Create for article {0}", key);
 
             ArticleItem newItem = item;
-            await daprClient.SaveStateAsync(StoreName, key, newItem);
+            var options = new StateOptions() {Concurrency = ConcurrencyMode.FirstWrite};            
+            await daprClient.SaveStateAsync(StoreName, key, newItem, options);
 
             return string.Format("Article created key: {0}", key);
         }
@@ -39,12 +41,22 @@ namespace api_articles.Controllers
         [HttpPost("LikeProcess")]
         public async Task<ActionResult<ArticleItem>> LikeProcess(VoteItem vote, [FromServices] DaprClient daprClient)
         {
-            Console.WriteLine("Enter LikeProcess");
-            var state = await daprClient.GetStateEntryAsync<ArticleItem>(StoreName, vote.articleid);
+            Console.WriteLine("Enter LikeProcess for article {0}", vote.articleid);
+            var state = await daprClient.GetStateEntryAsync<ArticleItem>(StoreName, vote.articleid, ConsistencyMode.Strong);
             state.Value ??= new ArticleItem() { articleid = vote.articleid, voteCount = 0 };
+
             state.Value.voteCount++;
-            await state.SaveAsync();
-            Console.WriteLine("voteCount increased to: " + state.Value.voteCount.ToString());
+            var options = new StateOptions() {Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong};
+            Console.WriteLine("Article {0} voteCount increased to: {1}", vote.articleid, state.Value.voteCount);
+
+            try {
+                await state.SaveAsync(options);
+                Console.WriteLine("Article {0} voteCount saved.", vote.articleid);
+            }
+            catch
+            {
+                Console.WriteLine("Article {0} voteCount ERROR.", vote.articleid);
+            }
             return state.Value;
         }
     }

@@ -39,7 +39,7 @@ Run from commandline or from VS Code Launch task Dapr-Debug
 
 ```powershell
 cd api-votes
-dapr run --app-id app-votes --port 5020 --app-port 5000 dotnet run --components-path ./components
+dapr run --app-id app-votes --dapr-http-port 5020 --app-port 5000 dotnet run --components-path ./components
 ```
 
 Test Hello call
@@ -56,9 +56,22 @@ curl -X POST http://localhost:5020/v1.0/invoke/app-votes/method/like -H "Content
 curl -X POST http://localhost:5020/v1.0/invoke/app-votes/method/like -H "Content-Type: application/json" -d '{ \"articleid\": \"2\", \"userid\": \"jj\" }'
 ```
 
+```powershell
+$i = 0
+while ($i -ne 30) {
+    curl -X POST http://localhost:5000/like -H "Content-Type: application/json" -d ('{ \"articleid\": \"1\", \"userid\": \"jj' + $i + '\" }')
+    $i++
+}
+```
+
 ## Create project for API Articles
 
 Follow same steps as for API Votes, configure state store for CosmosDB - articles container
+
+Configure state store for CosmosDB - articles container
+
+- https://github.com/dapr/docs/blob/master/howto/setup-state-store/setup-azure-cosmosdb.md
+- https://docs.dapr.io/developing-applications/building-blocks/state-management/state-management-overview/#concurrency
 
 Dapr Publish/Subscribe
 
@@ -69,7 +82,7 @@ Run from commandline or from VS Code Launch task Dapr-Debug (changed default dot
 
 ```powershell
 cd api-articles
-dapr run --app-id app-articles --port 5030 --app-port 5005 dotnet run --components-path ./components
+dapr run --app-id app-articles --dapr-http-port 5030 --app-port 5005 dotnet run --components-path ./components
 ```
 
 Test Hello call
