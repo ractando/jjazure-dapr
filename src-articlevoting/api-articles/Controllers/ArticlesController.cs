@@ -42,22 +42,32 @@ namespace api_articles.Controllers
         public async Task<ActionResult<ArticleItem>> LikeProcess(VoteItem vote, [FromServices] DaprClient daprClient)
         {
             Console.WriteLine("Enter LikeProcess for article {0}", vote.articleid);
-            var state = await daprClient.GetStateEntryAsync<ArticleItem>(StoreName, vote.articleid, ConsistencyMode.Strong);
-            state.Value ??= new ArticleItem() { articleid = vote.articleid, voteCount = 0 };
 
-            state.Value.voteCount++;
-            var options = new StateOptions() {Concurrency = ConcurrencyMode.FirstWrite, Consistency = ConsistencyMode.Strong};
-            Console.WriteLine("Article {0} voteCount increased to: {1}", vote.articleid, state.Value.voteCount);
+            // getting etag to avoid concurrent writes (https://github.com/dapr/dotnet-sdk/pull/498/files)
+            var (state, etag) = await daprClient.GetStateAndETagAsync<ArticleItem>(StoreName, vote.articleid);
+            state??= new ArticleItem() { articleid = vote.articleid, voteCount = 0 };
 
-            try {
-                await state.SaveAsync(options);
-                Console.WriteLine("Article {0} voteCount saved.", vote.articleid);
+            state.voteCount++;
+            Console.WriteLine("Article {0} voteCount increased to: {1} etag {2}", vote.articleid, state.voteCount, etag);
+
+            try {                
+                var options = new StateOptions() {Concurrency = ConcurrencyMode.FirstWrite};
+                bool isSaveStateSuccess = await daprClient.TrySaveStateAsync<ArticleItem>(StoreName, vote.articleid, state, etag);
+                if (isSaveStateSuccess)
+                    Console.WriteLine("Article {0} voteCount saved.", vote.articleid);
+                else
+                {
+                    Console.WriteLine("Article {0} voteCount NOT saved, error eTag {1}.", vote.articleid, isSaveStateSuccess);
+                    throw new Exception("Wrong eTag - version has changed !");
+                    // TODO: retry to get etag and update it again
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Article {0} voteCount ERROR.", vote.articleid);
+                Console.WriteLine("Article {0} voteCount ERROR {1}.", vote.articleid, ex.Message);
+                return BadRequest();
             }
-            return state.Value;
+            return state;
         }
     }
 }

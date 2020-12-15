@@ -61,6 +61,7 @@ $i = 0
 while ($i -ne 30) {
     curl -X POST http://localhost:5000/like -H "Content-Type: application/json" -d ('{ \"articleid\": \"1\", \"userid\": \"jj' + $i + '\" }')
     $i++
+    #Start-Sleep -Seconds 1
 }
 ```
 
