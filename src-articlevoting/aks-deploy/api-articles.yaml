@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-articles
+  labels:
+    app: api-articles
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-articles
+  template:
+    metadata:
+      labels:
+        app: api-articles
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "api-articles"
+        dapr.io/app-port: "5005"
+    spec:
+      containers:
+      - name: api-articles
+        image: jjakscontainers.azurecr.io/api-articles:v1
+        ports:
+        - containerPort: 5005

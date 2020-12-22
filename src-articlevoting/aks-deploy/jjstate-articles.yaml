@@ -1,0 +1,15 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: jjstate-articles
+spec:
+  type: state.azure.cosmosdb
+  metadata:
+  - name: url
+    value: https://jjcosmos.documents.azure.com:443/
+  - name: masterKey    
+    value: <KEY>
+  - name: database
+    value: jjdb
+  - name: collection
+    value: articles

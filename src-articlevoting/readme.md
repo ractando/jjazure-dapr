@@ -102,3 +102,62 @@ curl -X POST http://localhost:5030/v1.0/invoke/app-articles/method/create -H "Co
 curl -X POST http://localhost:5030/v1.0/publish/pubsub/likeprocess -H "Content-Type: application/json" -d '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
 dapr publish --topic likeprocess --pubsub pubsub --data '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
 ```
+
+## Deploy into Azure Kubernetes Service (AKS)
+
+We will use this Azure components
+
+- Azure Azure Kubernetes Service (AKS)
+- Azure Container Service
+- Azure CosmosDB - name jjcosmos
+- Azure ServiceBus - name jjsbus with queue likeprocess
+
+Install Dapr into AKS https://docs.dapr.io/getting-started/install-dapr-kubernetes/
+
+Configuration prepared by this sample https://github.com/dapr/quickstarts/tree/release-0.11/hello-kubernetes/deploy
+
+```powershell
+dapr init -k
+
+kubectl get pods -n dapr-system
+dapr dashboard -k
+```
+
+Modify security keys and create state stores with pubsubs.
+
+```powershell
+kubectl apply -f ./aks-deploy/jjstate-votes.yaml
+kubectl apply -f ./aks-deploy/jjstate-articles.yaml
+kubectl apply -f ./aks-deploy/pubsub.yaml
+```
+
+Build and deploy API Votes 
+
+```powershell
+docker build -t api-votes ./api-votes
+docker tag api-votes jjakscontainers.azurecr.io/api-votes:v1
+docker push jjakscontainers.azurecr.io/api-votes:v1
+kubectl apply -f ./aks-deploy/api-votes.yaml
+```
+
+Check API Votes is running http://<your_ip>/hello
+
+Build and deploy API Articles
+
+```powershell
+docker build -t api-articles ./api-articles
+docker tag api-articles jjakscontainers.azurecr.io/api-articles:v1
+docker push jjakscontainers.azurecr.io/api-articles:v1
+kubectl apply -f ./aks-deploy/api-articles.yaml
+```
+
+Send test data and check Cosmos DB for results
+
+```powershell
+$i = 0
+while ($i -ne 30) {
+    curl -X POST http://<your_ip>/like -H "Content-Type: application/json" -d ('{ \"articleid\": \"1\", \"userid\": \"jj' + $i + '\" }')
+    $i++
+    #Start-Sleep -Seconds 1
+}
+```

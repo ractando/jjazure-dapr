@@ -1,0 +1,42 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: api-votes
+  labels:
+    app: api-votes
+spec:
+  selector:
+    app: api-votes
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-votes
+  labels:
+    app: api-votes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-votes
+  template:
+    metadata:
+      labels:
+        app: api-votes
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "api-votes"
+        dapr.io/app-port: "80"
+    spec:
+      containers:
+      - name: api-votes
+        image: jjakscontainers.azurecr.io/api-votes:v1
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
