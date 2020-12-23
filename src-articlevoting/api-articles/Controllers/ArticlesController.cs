@@ -39,7 +39,7 @@ namespace api_articles.Controllers
         // consuming message from pubsub (defined in components)
         [Topic("pubsub","likeprocess")]
         [HttpPost("LikeProcess")]
-        public async Task<ActionResult<ArticleItem>> LikeProcess(VoteItem vote, [FromServices] DaprClient daprClient)
+        public async Task<ActionResult> LikeProcess(VoteItem vote, [FromServices] DaprClient daprClient)
         {
             Console.WriteLine("Enter LikeProcess for article {0}", vote.articleid);
 
@@ -67,7 +67,9 @@ namespace api_articles.Controllers
                 Console.WriteLine("Article {0} voteCount ERROR {1}.", vote.articleid, ex.Message);
                 return BadRequest();
             }
-            return state;
+
+            Console.WriteLine("Finished LikeProcess for article {0}", vote.articleid);
+            return Ok() ;
         }
     }
 }
