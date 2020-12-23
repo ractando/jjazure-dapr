@@ -23,3 +23,4 @@ spec:
         image: jjakscontainers.azurecr.io/api-articles:v1
         ports:
         - containerPort: 5005
+        imagePullPolicy: Always

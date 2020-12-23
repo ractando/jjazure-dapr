@@ -110,11 +110,13 @@ We will use this Azure components
 - Azure Azure Kubernetes Service (AKS)
 - Azure Container Service
 - Azure CosmosDB - name jjcosmos
-- Azure ServiceBus - name jjsbus with queue likeprocess
+- Azure ServiceBus - name jjsbus tier Standard with Topic likeprocess
 
 Install Dapr into AKS https://docs.dapr.io/getting-started/install-dapr-kubernetes/
 
 Configuration prepared by this sample https://github.com/dapr/quickstarts/tree/release-0.11/hello-kubernetes/deploy
+
+Configuration for pubsub Azure Service Bus Topics https://docs.dapr.io/operations/components/setup-pubsub/supported-pubsub/setup-azure-servicebus/
 
 ```powershell
 dapr init -k
@@ -154,10 +156,5 @@ kubectl apply -f ./aks-deploy/api-articles.yaml
 Send test data and check Cosmos DB for results
 
 ```powershell
-$i = 0
-while ($i -ne 30) {
-    curl -X POST http://<your_ip>/like -H "Content-Type: application/json" -d ('{ \"articleid\": \"1\", \"userid\": \"jj' + $i + '\" }')
-    $i++
-    #Start-Sleep -Seconds 1
-}
+curl -X POST http://<YOUR_IP>/like -H "Content-Type: application/json" -d '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
 ```
