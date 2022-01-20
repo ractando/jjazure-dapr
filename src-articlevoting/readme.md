@@ -158,3 +158,28 @@ Send test data and check Cosmos DB for results
 ```powershell
 curl -X POST http://<YOUR_IP>/like -H "Content-Type: application/json" -d '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
 ```
+
+## Deploy into Azure Container Apps
+
+Check this documentation https://docs.microsoft.com/en-us/azure/container-apps/microservices-dapr-azure-resource-manager?tabs=bash&pivots=container-apps-bicep
+
+Bicep deployment using 2 modules
+- CosmosDb module for data persistency
+- ServiceBus module for pubsub functionality
+- App module for Container App
+
+Prerequisite is pushed image into Azure Container Registry
+
+```powershell
+cd containerapps-deploy
+.\deploy.ps1
+```
+
+Monitoring - run following query
+
+```kusto
+ContainerAppConsoleLogs_CL | where ContainerAppName_s == 'jjarticlevoting-articles' | project ContainerAppName_s, Log_s, TimeGenerated
+```
+
+I found problem with missing MSI - error message: level=fatal msg="process component jjstate-articles error: the MSI endpoint is not available. Failed HTTP request to MSI endpoint: Get \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01\": context deadline exceeded" app_id=api-articles instance=jjarticlevoting-articles--2cfumef-6c67c9b97c-5qj4x scope=dapr.runtime type=log ver=edge
+
