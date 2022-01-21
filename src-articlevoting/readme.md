@@ -187,8 +187,6 @@ Test like
 curl -X POST http://<CONTAINERAPP_URL>/like -H "Content-Type: application/json" -d '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
 ```
 
-curl -X POST https://jjarticlevoting-votes.calmbush-5cf2c954.northeurope.azurecontainerapps.io/like -H "Content-Type: application/json" -d '{ \"articleid\": \"1\", \"userid\": \"jj\" }'
-
 Monitoring - run following query
 
 ```kusto
