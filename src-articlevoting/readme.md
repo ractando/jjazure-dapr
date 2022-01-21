@@ -175,11 +175,20 @@ cd containerapps-deploy
 .\deploy.ps1
 ```
 
+Test Hello call
+
+```powershell
+curl https://<CONTAINERAPP_URL>/v1.0/invoke/app-votes/method/hello
+```
+
 Monitoring - run following query
 
 ```kusto
-ContainerAppConsoleLogs_CL | where ContainerAppName_s == 'jjarticlevoting-articles' | project ContainerAppName_s, Log_s, TimeGenerated
+ContainerAppConsoleLogs_CL | where ContainerAppName_s == 'jjarticlevoting-articles' | project ContainerAppName_s, Log_s, TimeGenerated | order by TimeGenerated
+ContainerAppConsoleLogs_CL | where ContainerAppName_s == 'jjarticlevoting-votes' | project ContainerAppName_s, Log_s, TimeGenerated | order by TimeGenerated
 ```
 
-I found problem with missing MSI - error message: level=fatal msg="process component jjstate-articles error: the MSI endpoint is not available. Failed HTTP request to MSI endpoint: Get \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01\": context deadline exceeded" app_id=api-articles instance=jjarticlevoting-articles--2cfumef-6c67c9b97c-5qj4x scope=dapr.runtime type=log ver=edge
+I found problem with CosmosDB - missing MSI - error message: level=fatal msg="process component jjstate-articles error: the MSI endpoint is not available. Failed HTTP request to MSI endpoint: Get \"http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01\": context deadline exceeded" app_id=api-articles instance=jjarticlevoting-articles--2cfumef-6c67c9b97c-5qj4x scope=dapr.runtime type=log ver=edge
+
+Submitted GitHub Issue https://github.com/MicrosoftDocs/azure-docs/issues/86703
 
