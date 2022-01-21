@@ -119,7 +119,7 @@ resource appArticles 'Microsoft.Web/containerApps@2021-03-01' = {
       }
       dapr: {
         enabled: true
-        appPort: 5005        
+        appPort: 5005  
         appId: 'app-articles'
         components: [
           // {
@@ -191,7 +191,7 @@ resource appVotes 'Microsoft.Web/containerApps@2021-03-01' = {
     configuration: {
       ingress: {
         external: true
-        targetPort: 5000       
+        targetPort: 80
       }
       secrets: [
         {
@@ -236,11 +236,11 @@ resource appVotes 'Microsoft.Web/containerApps@2021-03-01' = {
       }
       dapr: {
         enabled: true
-        appPort: 5000
+        appPort: 80
         appId: 'app-votes'
         components: [
           // {
-          //   name: 'jjstate-articles'
+          //   name: 'jjstate-votes'
           //   type: 'state.azure.cosmosdb'
           //   version: 'v1'
           //   metadata: [
