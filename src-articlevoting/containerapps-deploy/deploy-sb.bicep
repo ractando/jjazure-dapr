@@ -1,4 +1,4 @@
-param sbName string = 'jjsbus'
+param sbName string = 'jjsbusca'
 
 param location string = resourceGroup().location
 

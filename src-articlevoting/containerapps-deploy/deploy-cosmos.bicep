@@ -1,4 +1,4 @@
-param cosmosName string = 'jjcosmos'
+param cosmosName string = 'jjcosmosca'
 
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2021-10-15' = {
   name: cosmosName
@@ -19,7 +19,7 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2021-10-15' = {
   }
 }
 
-var cosmosDbName = 'jjdb'
+var cosmosDbName = 'jjdbca'
 resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-10-15' = {
   parent: cosmosAccount
   name: cosmosDbName
@@ -30,7 +30,7 @@ resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-10-15
   }
 }
 
-var containerArticlesName = 'articles'
+var containerArticlesName = 'articlesca'
 resource containerArticles 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-01-15' = {
   parent: cosmosDb
   name: containerArticlesName
@@ -61,7 +61,7 @@ resource containerArticles 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/c
   }
 }
 
-var containerVotesName = 'votes'
+var containerVotesName = 'votesca'
 resource containerVotes 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-01-15' = {
   parent: cosmosDb
   name: containerVotesName

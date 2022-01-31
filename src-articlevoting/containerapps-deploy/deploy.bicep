@@ -1,29 +1,29 @@
 module cosmos 'deploy-cosmos.bicep' = {
-  name: 'jjcosmos'
+  name: 'jjcosmosca'
   params:{
-    cosmosName: 'jjcosmos'
+    cosmosName: 'jjcosmosca'
   }
 }
 
 module st 'deploy-storage.bicep' = {
-  name: 'jjstoragedapr'
+  name: 'jjstoragedaprca'
   params:{
-    stName: 'jjstoragedapr'
+    stName: 'jjstoragedaprca'
   }
 }
 
 module sb 'deploy-sb.bicep' = {
-  name: 'jjsbus'
+  name: 'jjsbusca'
   params:{
-    sbName: 'jjsbus'
+    sbName: 'jjsbusca'
   }
 }
 
 module app 'deploy-app.bicep' = {
-  name: 'jjapp'
+  name: 'jjappca'
   params: {
-    appName: 'jjarticlevoting'
-    imageRegistryName: 'jjakscontainers'
+    appName: 'jjarticlevotingca'
+    imageRegistryName: 'jjakscontainersne'
     imageArticles: 'api-articles:v1'
     imageVotes: 'api-votes:v1'
     cosmosAccountName: cosmos.outputs.cosmosAccountName

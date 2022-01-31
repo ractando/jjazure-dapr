@@ -1,4 +1,4 @@
-param stName string = 'jjstoragedapr'
+param stName string = 'jjstoragedaprca'
 
 param location string = resourceGroup().location
 

@@ -1,4 +1,4 @@
-param appName string = 'jjarticlevoting'
+param appName string = 'jjarticlevotingca'
 param envName string = '${appName}-env'
 param imageRegistryName string
 param imageArticles string
@@ -8,8 +8,8 @@ param cosmosAccountName string
 param sbNamespaceName string
 param stAccountName string
 
-param logName string = 'jjdev-analytics'
-param logResourceGroupName string = 'jjdevmanagement'
+param logName string = 'jjdev-analyticsne'
+param logResourceGroupName string = 'jjdevmanagementne'
 
 param location string = resourceGroup().location
 
